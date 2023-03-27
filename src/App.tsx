@@ -1,26 +1,36 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { QueryClient, QueryClientProvider } from "react-query";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import ContentLayout from "./components/layouts/ContentLayout/ContentLayout";
+import ConnectionsScreen from "./features/screens/ConnectionsScreen/ConnectionsScreen";
+import CreateConnectionScreen from "./features/screens/CreateConnectionScreen/CreateConnectionsScreen";
+import CredentialSchemasScreen from "./features/screens/CredentialSchemasScreen/CredentialSchemasScreen";
+import HomeScreen from "./features/screens/HomeScreen/HomeScreen";
 
-function App() {
+const App = () => {
+  const queryClient = new QueryClient();
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <div className="app">
+          <ContentLayout>
+            <Routes>
+              <Route path="/" element={<HomeScreen />} />
+              <Route path="/connections" element={<ConnectionsScreen />} />
+              <Route
+                path="/connections/create"
+                element={<CreateConnectionScreen />}
+              />
+
+              <Route
+                path="/credential-schemas"
+                element={<CredentialSchemasScreen />}
+              />
+            </Routes>
+          </ContentLayout>
+        </div>
+      </BrowserRouter>
+    </QueryClientProvider>
   );
-}
+};
 
 export default App;

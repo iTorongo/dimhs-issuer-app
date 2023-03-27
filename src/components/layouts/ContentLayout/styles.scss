@@ -1,0 +1,33 @@
+@import "../../../styles/colors";
+@import "../../../styles/variables";
+
+.content-layout {
+  min-height: 100vh;
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  color: #fff;
+}
+.ant-layout-sider-children {
+  //position: fixed;
+}
+.sidebar-trigger {
+  padding: 12px;
+  color: #fff;
+}
+
+.ant-menu-item {
+  a {
+    text-decoration: none;
+  }
+}
+
+.content {
+  margin: 24px 16px;
+  padding: 24px;
+  background: #fff;
+}
