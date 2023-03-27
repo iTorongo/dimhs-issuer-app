@@ -1,5 +1,5 @@
 import { PlusCircleOutlined } from "@ant-design/icons";
-import { Button, Card, Space, Row, Col, QRCode } from "antd";
+import { Button, Card, Space, Row, Col, QRCode, Empty, Alert } from "antd";
 import { useState } from "react";
 import { useMutation, useQuery } from "react-query";
 import {
@@ -43,28 +43,51 @@ const CreateConnectionScreen = () => {
             icon={<PlusCircleOutlined />}
             onClick={() => createConnection()}
             loading={createConnectionMutation?.isLoading}
+            className="mb-3"
           >
             Create Connection Invitation
           </Button>
+          {createdInvitation?.invitation_url && (
+            <Alert
+              message="Connection Invitation Created"
+              type="success"
+              showIcon
+            />
+          )}
         </Col>
-        <Col span={24}>
-          <Space>
+        <Row gutter={[12, 12]}>
+          <Col>
             {!!createdInvitation && (
               <Card
                 title="Invitation Object"
-                style={{ width: 600, marginTop: 16 }}
+                style={{ width: 600 }}
                 loading={createConnectionMutation?.isLoading}
               >
-                <pre>{JSON.stringify(createdInvitation)}</pre>
+                <pre>{JSON.stringify(createdInvitation, null, 2)}</pre>
               </Card>
             )}
-          </Space>
-        </Col>
+          </Col>
+          <Col>
+            {createdInvitation?.invitation_url && (
+              <Card title="Scan Invitation QR Code">
+                <QRCode value={createdInvitation?.invitation_url} />
+                {/* <QRCode value={JSON.stringify(tempInvitation)} /> */}
+              </Card>
+            )}
+          </Col>
+        </Row>
+
         <Col>
-          <Card title="Scan QR Code">
-            <QRCode value={createdInvitation?.invitation_url} />
-            <QRCode value={JSON.stringify(tempInvitation)} />
-          </Card>
+          {createdInvitation?.invitation_url ? (
+            <Alert
+              message="Copy Invitation URL"
+              description={createdInvitation?.invitation_url}
+              type="info"
+              showIcon
+            />
+          ) : (
+            <Empty description="No invitation" />
+          )}
         </Col>
       </Row>
     </div>

@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect } from "react";
+import { Typography } from "antd";
+
+const { Title } = Typography;
 
 const HomeScreen = () => {
   return (
     <div className="d-flex">
-      <div>a</div>
-      <div>Home</div>
+      <Title level={2}>Welcome Hospital Issuer</Title>
     </div>
   );
 };

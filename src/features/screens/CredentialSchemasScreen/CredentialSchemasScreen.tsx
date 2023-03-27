@@ -1,4 +1,9 @@
-import { LinkOutlined } from "@ant-design/icons";
+import {
+  EditOutlined,
+  EllipsisOutlined,
+  LinkOutlined,
+  SettingOutlined,
+} from "@ant-design/icons";
 import {
   Collapse,
   Table,
@@ -10,7 +15,11 @@ import {
   Modal,
   List,
   Card,
+  Row,
+  Col,
+  Avatar,
 } from "antd";
+import Meta from "antd/es/card/Meta";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
@@ -64,6 +73,23 @@ const CredentialSchemasScreen = () => {
         dataSource={schemas}
         renderItem={(item: any) => <List.Item>{item}</List.Item>}
       />
+      <Row>
+        <Col>
+          <Card
+            style={{ width: 300, marginTop: 16 }}
+            actions={[
+              <SettingOutlined key="setting" />,
+              <EllipsisOutlined key="ellipsis" />,
+            ]}
+          >
+            <Meta
+              avatar={<Avatar src="https://joesch.moe/api/v1/random?key=1" />}
+              title="Credential title"
+              description="This is the description of credential"
+            />
+          </Card>
+        </Col>
+      </Row>
     </div>
   );
 };

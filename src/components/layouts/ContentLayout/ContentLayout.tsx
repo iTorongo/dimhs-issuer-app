@@ -24,7 +24,7 @@ const ContentLayout = ({ children }: Props) => {
             style={{ backgroundColor: "#87d068" }}
             icon={<BankOutlined />}
           />
-          <span>Issuer</span>
+          <span className="ms-2">Issuer</span>
         </div>
       </Header>
       <Layout>
