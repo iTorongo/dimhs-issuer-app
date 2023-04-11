@@ -1,11 +1,12 @@
-import { PlusCircleOutlined } from "@ant-design/icons";
+import { PlusCircleOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import { Button, Card, Space, Row, Col, QRCode, Empty, Alert } from "antd";
 import { useState } from "react";
 import { useMutation, useQuery } from "react-query";
+import { Link, Navigate } from "react-router-dom";
 import {
   createConnectionInvitation,
   getConnections,
-} from "../../../api/services";
+} from "../../../../api/services";
 
 const CreateConnectionScreen = () => {
   const [createdInvitation, setCreatedInvitation] = useState<any>();
@@ -21,7 +22,13 @@ const CreateConnectionScreen = () => {
   });
 
   const createConnection = () => {
-    createConnectionMutation.mutate({});
+    createConnectionMutation.mutate({
+      metadata: {
+        purpose: "dev",
+        name: "Hospital",
+      },
+      my_label: "Faber Agent",
+    });
   };
 
   const tempInvitation = {
@@ -37,16 +44,22 @@ const CreateConnectionScreen = () => {
     <div className="create-connection-container">
       <Row gutter={[16, 16]}>
         <Col span={24}>
-          <Button
-            type="primary"
-            size="large"
-            icon={<PlusCircleOutlined />}
-            onClick={() => createConnection()}
-            loading={createConnectionMutation?.isLoading}
-            className="mb-3"
-          >
-            Create Connection Invitation
-          </Button>
+          <div className="d-flex justify-content-between">
+            <Button
+              type="primary"
+              size="large"
+              icon={<PlusCircleOutlined />}
+              onClick={() => createConnection()}
+              loading={createConnectionMutation?.isLoading}
+              className="mb-3"
+            >
+              Create Connection Invitation
+            </Button>
+            <Button className="m-2" type="default" icon={<ArrowLeftOutlined />}>
+              <Link to="/connections">Back</Link>
+            </Button>
+          </div>
+
           {createdInvitation?.invitation_url && (
             <Alert
               message="Connection Invitation Created"

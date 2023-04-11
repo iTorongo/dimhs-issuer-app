@@ -12,7 +12,8 @@ import {
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
-import { getConnectionById, getConnections } from "../../../api/services";
+import { getConnectionById, getConnections } from "../../../../api/services";
+import "./styles.scss";
 
 const { Panel } = Collapse;
 
