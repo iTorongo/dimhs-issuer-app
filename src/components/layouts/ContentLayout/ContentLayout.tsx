@@ -8,12 +8,12 @@ import {
   HomeOutlined,
 } from "@ant-design/icons";
 import { ReactNode, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 import "./styles.scss";
 
 const { Header, Sider, Content } = Layout;
 
-const ContentLayout = ({ children }: Props) => {
+const ContentLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
   return (
     <Layout className="content-layout">
@@ -55,9 +55,23 @@ const ContentLayout = ({ children }: Props) => {
                 Credential Schemas
               </NavLink>
             </Menu.Item>
+            <Menu.Item key="credential-definitions">
+              <NavLink to="/credential-definitions">
+                <TeamOutlined className="me-2" />
+                Credential Definitions
+              </NavLink>
+            </Menu.Item>
+            <Menu.Item key="issue-credentials">
+              <NavLink to="/issue-credentials">
+                <TeamOutlined className="me-2" />
+                Issue Credentials
+              </NavLink>
+            </Menu.Item>
           </Menu>
         </Sider>
-        <Content className="content">{children}</Content>
+        <Content className="content">
+          <Outlet />
+        </Content>
       </Layout>
     </Layout>
   );
@@ -66,5 +80,5 @@ const ContentLayout = ({ children }: Props) => {
 export default ContentLayout;
 
 interface Props {
-  children: ReactNode;
+  children?: ReactNode;
 }

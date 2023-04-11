@@ -1,0 +1,12 @@
+@import "../../../styles/colors";
+@import "../../../styles/variables";
+
+.default-layout {
+  min-height: 100vh;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
