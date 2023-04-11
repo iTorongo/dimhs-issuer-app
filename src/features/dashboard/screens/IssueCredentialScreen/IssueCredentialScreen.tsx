@@ -9,7 +9,6 @@ import {
   Form,
   DatePicker,
   TimePicker,
-  InputNumber,
   Input,
 } from "antd";
 import TextArea from "antd/es/input/TextArea";
@@ -198,7 +197,7 @@ const IssueCredentialScreen = () => {
               <Form.Item label="Timestamp" name="timestamp">
                 <TimePicker />
               </Form.Item>
-              <Form.Item label="TextArea" name="comment">
+              <Form.Item label="Comment" name="comment">
                 <TextArea rows={4} />
               </Form.Item>
               <Form.Item wrapperCol={{ offset: 8, span: 16 }}>

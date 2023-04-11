@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useCallback, useEffect } from "react";
 import { Typography } from "antd";
 
 const { Title } = Typography;

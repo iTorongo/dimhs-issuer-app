@@ -1,12 +1,9 @@
 import { PlusCircleOutlined, ArrowLeftOutlined } from "@ant-design/icons";
-import { Button, Card, Space, Row, Col, QRCode, Empty, Alert } from "antd";
+import { Button, Card, Row, Col, QRCode, Empty, Alert } from "antd";
 import { useState } from "react";
-import { useMutation, useQuery } from "react-query";
-import { Link, Navigate } from "react-router-dom";
-import {
-  createConnectionInvitation,
-  getConnections,
-} from "../../../../api/services";
+import { useMutation } from "react-query";
+import { Link } from "react-router-dom";
+import { createConnectionInvitation } from "../../../../api/services";
 
 const CreateConnectionScreen = () => {
   const [createdInvitation, setCreatedInvitation] = useState<any>();

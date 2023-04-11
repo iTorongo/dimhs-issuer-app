@@ -32,6 +32,7 @@
     "no-unused-expressions": "off",
     "no-unused-vars": 1,
     "@typescript-eslint/no-unused-vars": ["warn"],
+    "@typescript-eslint/no-explicit-any": ["off"],
     "react/function-component-definition": [
       2,
       {
@@ -42,7 +43,7 @@
     "import/order": [
       "warn",
       {
-        "newlines-between": "always",
+        // "newlines-between": "always",
         "groups": [
           ["builtin", "external"],
           "internal",

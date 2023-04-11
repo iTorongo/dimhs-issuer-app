@@ -1,39 +1,7 @@
-import {
-  EditOutlined,
-  EllipsisOutlined,
-  LinkOutlined,
-  SettingOutlined,
-} from "@ant-design/icons";
-import {
-  Collapse,
-  Table,
-  Tabs,
-  TabsProps,
-  Tag,
-  Button,
-  Space,
-  Modal,
-  List,
-  Card,
-  Row,
-  Col,
-  Avatar,
-  Descriptions,
-} from "antd";
-import Meta from "antd/es/card/Meta";
+import { Collapse, Card, Row, Col, Descriptions } from "antd";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { useNavigate } from "react-router-dom";
-import {
-  getConnectionById,
-  getConnections,
-  getCredDef,
-  getCredDefs,
-  getSchema,
-  getSchemas,
-  testGetEndpoints,
-} from "../../../../api/services";
-import { capitalizeFirstLetter } from "../../../../helpers/utils.helpers";
+import { getCredDef, getCredDefs } from "../../../../api/services";
 
 const { Panel } = Collapse;
 

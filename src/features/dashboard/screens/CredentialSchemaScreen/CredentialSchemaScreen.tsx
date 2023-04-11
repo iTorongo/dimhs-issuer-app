@@ -1,43 +1,13 @@
-import {
-  EditOutlined,
-  EllipsisOutlined,
-  LinkOutlined,
-  SettingOutlined,
-} from "@ant-design/icons";
-import {
-  Collapse,
-  Table,
-  Tabs,
-  TabsProps,
-  Tag,
-  Button,
-  Space,
-  Modal,
-  List,
-  Card,
-  Row,
-  Col,
-  Avatar,
-  Descriptions,
-} from "antd";
-import Meta from "antd/es/card/Meta";
+import { Collapse, List, Card, Row, Col, Descriptions } from "antd";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { useNavigate } from "react-router-dom";
-import {
-  getConnectionById,
-  getConnections,
-  getSchema,
-  getSchemas,
-} from "../../../../api/services";
+import { getSchema, getSchemas } from "../../../../api/services";
 import { capitalizeFirstLetter } from "../../../../helpers/utils.helpers";
 
 const { Panel } = Collapse;
 
 const CredentialSchemasScreen = () => {
   const [schemas, setSchemas] = useState<any>();
-
-  const navigate = useNavigate();
 
   const { isLoading, data } = useQuery({
     queryKey: ["getSchemas"],
@@ -51,14 +21,6 @@ const CredentialSchemasScreen = () => {
     enabled: !!schemas?.[0],
   });
 
-  console.log(schemaResponse);
-
-  // const connectionDetailsResponse = useQuery({
-  //   queryKey: ["getConnectionById"],
-  //   queryFn: () => getConnectionById(selectedConnectionId),
-  //   enabled: !!selectedConnectionId,
-  // });
-
   useEffect(() => {
     setSchemas(data?.data?.schema_ids);
     return () => {
@@ -68,23 +30,6 @@ const CredentialSchemasScreen = () => {
 
   return (
     <div className="schema-container">
-      {/* <Space>
-        <Button
-          type="primary"
-          size="large"
-          icon={<LinkOutlined />}
-          onClick={() => navigate("create")}
-        >
-          Create Connection
-        </Button>
-      </Space> */}
-      {/* <List
-        size="large"
-        header={<strong>Credential Schema Ids</strong>}
-        bordered
-        dataSource={schemas}
-        renderItem={(item: any) => <List.Item>{item}</List.Item>}
-      /> */}
       <Row>
         <Col>
           <Card>
