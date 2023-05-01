@@ -1,6 +1,6 @@
+import { useQuery } from "@tanstack/react-query";
 import { LinkOutlined } from "@ant-design/icons";
 import {
-  Collapse,
   Table,
   Tabs,
   TabsProps,
@@ -8,14 +8,18 @@ import {
   Button,
   Space,
   Modal,
+  notification,
 } from "antd";
 import { useEffect, useState } from "react";
-import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
-import { getConnectionById, getConnections } from "../../../../api/services";
+import {
+  getConnectionById,
+  getConnections,
+  acceptConnection,
+} from "../../../../api/services";
+import { formattedDateTime } from "../../../../helpers/utils.helpers";
+import Title from "antd/es/typography/Title";
 import "./styles.scss";
-
-const { Panel } = Collapse;
 
 const ConnectionsScreen = () => {
   const [connections, setConnections] = useState<any>();
@@ -33,7 +37,7 @@ const ConnectionsScreen = () => {
   };
 
   const navigate = useNavigate();
-  const { isLoading, error, data, isFetching } = useQuery({
+  const { isLoading, data, refetch } = useQuery({
     queryKey: ["getConnections"],
     queryFn: () => getConnections(),
     enabled: true,
@@ -45,6 +49,16 @@ const ConnectionsScreen = () => {
     enabled: !!selectedConnectionId,
   });
 
+  const acceptConnectionRequest = (connectionId: string) => {
+    acceptConnection(connectionId).then((res: any) => {
+      notification.open({
+        type: "success",
+        message: `Connection established with ${res?.data?.their_label}`,
+      });
+      refetch();
+    });
+  };
+
   useEffect(() => {
     setConnections(data?.data?.results);
     return () => {
@@ -52,87 +66,118 @@ const ConnectionsScreen = () => {
     };
   }, [data]);
 
-  const getStateColor = (state: "active" | "invitation" | "rejected") => {
+  const getStateColor = (
+    state: "active" | "invitation" | "completed" | "request" | "response"
+  ) => {
     switch (state) {
       case "active":
+      case "completed":
         return "#87d068";
       case "invitation":
         return "blue";
+      case "response":
+        return "purple";
       default:
         return "#f50";
     }
   };
 
+  const renderTable = (isActive?: boolean, isPending?: boolean) => {
+    const dataSource = isActive
+      ? connections?.filter((connection: any) => connection.state === "active")
+      : isPending
+      ? connections?.filter((connection: any) => connection.state !== "active")
+      : connections;
+
+    return (
+      <Table dataSource={dataSource} loading={isLoading} scroll={{ y: 450 }}>
+        <Table.Column title="Connection Id" dataIndex="connection_id" />
+        <Table.Column
+          title="State"
+          dataIndex="state"
+          render={state => (
+            <Tag color={getStateColor(state)} key={state}>
+              {state}
+            </Tag>
+          )}
+        />
+        <Table.Column title="Detailed State" dataIndex="rfc23_state" />
+        <Table.Column
+          title="Created"
+          dataIndex="created_at"
+          render={value => {
+            return formattedDateTime(value);
+          }}
+        />
+        <Table.Column title="Holder Agent" dataIndex="their_label" />
+        <Table.Column title="Holder DID" dataIndex="their_did" />
+        <Table.Column
+          title="Details"
+          key="details"
+          render={(_: any, record: any) => (
+            <Space size="middle">
+              <Button
+                type="link"
+                onClick={() => showDetailsModal(record?.connection_id)}
+              >
+                Details
+              </Button>
+            </Space>
+          )}
+        />
+        <Table.Column
+          title="Action"
+          key="action"
+          render={(_: any, record: any) => (
+            <Space size="middle">
+              <Button
+                type="default"
+                disabled={record?.state !== "request"}
+                onClick={() => acceptConnectionRequest(record?.connection_id)}
+              >
+                Accept
+              </Button>
+            </Space>
+          )}
+        />
+      </Table>
+    );
+  };
   const tabItems: TabsProps["items"] = [
     {
       key: "1",
       label: `All`,
-      children: (
-        <Table dataSource={connections} loading={isLoading} scroll={{ y: 450 }}>
-          <Table.Column title="Connection Id" dataIndex="connection_id" />
-          <Table.Column
-            title="State"
-            dataIndex="state"
-            render={state => (
-              <Tag color={getStateColor(state)} key={state}>
-                {state}
-              </Tag>
-            )}
-          />
-          <Table.Column title="Created" dataIndex="created_at" />
-          <Table.Column title="Holder Agent" dataIndex="their_label" />
-          <Table.Column title="Holder DID" dataIndex="their_did" />
-          <Table.Column
-            title="Action"
-            key="action"
-            render={(_: any, record: any) => (
-              <Space size="middle">
-                <Button
-                  type="link"
-                  onClick={() => showDetailsModal(record?.connection_id)}
-                >
-                  Details
-                </Button>
-              </Space>
-            )}
-          />
-        </Table>
-      ),
+      children: renderTable(),
     },
     {
       key: "2",
       label: `Active`,
-      children: `Content of Tab Pane 2`,
+      children: renderTable(true),
     },
     {
       key: "3",
       label: `Pending`,
-      children: `Content of Tab Pane 3`,
+      children: renderTable(false, true),
     },
   ];
 
   return (
     <div className="connection-container">
-      <Space>
-        <Button
-          type="primary"
-          size="large"
-          icon={<LinkOutlined />}
-          onClick={() => navigate("create")}
-        >
-          Create Connection
-        </Button>
-      </Space>
-      <Tabs items={tabItems} />
-      {/* <Collapse accordion>
-        {data?.data?.results?.map((result: any) => {
-          return (
-            <Panel header={result.connection_id} key={result.connection_id}>
-              <p>{result.connection_id}</p>
-            </Panel>
-          );
-        })}
-      </Collapse> */}
+      <Title level={4}>Connection List</Title>
+      <div className="connection-content">
+        <Space>
+          <Button
+            type="primary"
+            size="large"
+            icon={<LinkOutlined />}
+            onClick={() => navigate("create")}
+          >
+            Create Connection
+          </Button>
+        </Space>
+
+        <Tabs items={tabItems} />
+      </div>
 
       <Modal
         title="Connection Details"

@@ -1,11 +1,13 @@
 import { PlusCircleOutlined, ArrowLeftOutlined } from "@ant-design/icons";
-import { Button, Card, Row, Col, QRCode, Empty, Alert } from "antd";
+import { Button, Card, Row, Col, QRCode, Empty, Alert, Typography } from "antd";
 import { useState } from "react";
-import { useMutation } from "react-query";
+import { useMutation } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { createConnectionInvitation } from "../../../../api/services";
 
-const CreateConnectionScreen = () => {
+const { Text } = Typography;
+
+const CreateConnectionScreen = ({ isPublic = false }: Props) => {
   const [createdInvitation, setCreatedInvitation] = useState<any>();
 
   const createConnectionMutation = useMutation({
@@ -22,9 +24,10 @@ const CreateConnectionScreen = () => {
     createConnectionMutation.mutate({
       metadata: {
         purpose: "dev",
-        name: "Hospital",
+        name: "Government",
       },
-      my_label: "Faber Agent",
+      my_label: "Government Agent",
+      accept: "manual",
     });
   };
 
@@ -42,19 +45,29 @@ const CreateConnectionScreen = () => {
       <Row gutter={[16, 16]}>
         <Col span={24}>
           <div className="d-flex justify-content-between">
-            <Button
-              type="primary"
-              size="large"
-              icon={<PlusCircleOutlined />}
-              onClick={() => createConnection()}
-              loading={createConnectionMutation?.isLoading}
-              className="mb-3"
-            >
-              Create Connection Invitation
-            </Button>
-            <Button className="m-2" type="default" icon={<ArrowLeftOutlined />}>
-              <Link to="/connections">Back</Link>
-            </Button>
+            {!createdInvitation && (
+              <Button
+                type="primary"
+                size="large"
+                icon={<PlusCircleOutlined />}
+                onClick={() => createConnection()}
+                loading={createConnectionMutation?.isLoading}
+                className="mb-3"
+              >
+                {!isPublic
+                  ? "Create Connection Invitation"
+                  : "Request for Connection"}
+              </Button>
+            )}
+            {!isPublic && (
+              <Button
+                className="m-2"
+                type="default"
+                icon={<ArrowLeftOutlined />}
+              >
+                <Link to="/connections">Back</Link>
+              </Button>
+            )}
           </div>
 
           {createdInvitation?.invitation_url && (
@@ -65,43 +78,59 @@ const CreateConnectionScreen = () => {
             />
           )}
         </Col>
-        <Row gutter={[12, 12]}>
-          <Col>
-            {!!createdInvitation && (
-              <Card
-                title="Invitation Object"
-                style={{ width: 600 }}
-                loading={createConnectionMutation?.isLoading}
-              >
-                <pre>{JSON.stringify(createdInvitation, null, 2)}</pre>
-              </Card>
-            )}
-          </Col>
-          <Col>
-            {createdInvitation?.invitation_url && (
-              <Card title="Scan Invitation QR Code">
-                <QRCode value={createdInvitation?.invitation_url} />
-                {/* <QRCode value={JSON.stringify(tempInvitation)} /> */}
-              </Card>
-            )}
-          </Col>
-        </Row>
 
-        <Col>
-          {createdInvitation?.invitation_url ? (
-            <Alert
-              message="Copy Invitation URL"
-              description={createdInvitation?.invitation_url}
-              type="info"
-              showIcon
-            />
-          ) : (
-            <Empty description="No invitation" />
+        <Col span={24}>
+          {!!createdInvitation && !isPublic && (
+            <Card
+              title="Invitation Object"
+              loading={createConnectionMutation?.isLoading}
+            >
+              <pre>{JSON.stringify(createdInvitation, null, 2)}</pre>
+            </Card>
           )}
         </Col>
+        <Col span={24}>
+          {createdInvitation?.invitation_url && (
+            <>
+              <div className="d-flex justify-content-center">
+                <Card title="Scan Invitation QR Code">
+                  <QRCode
+                    size={512}
+                    value={createdInvitation?.invitation_url}
+                  />
+                </Card>
+              </div>
+
+              <Text className="d-block mb-3">
+                Scan the QR Code with your digital wallet when it will be
+                available to establish connection with Government and wait for
+                your credential!
+              </Text>
+            </>
+          )}
+        </Col>
+
+        {!isPublic && (
+          <Col>
+            {createdInvitation?.invitation_url ? (
+              <Alert
+                message="Copy Invitation URL"
+                description={createdInvitation?.invitation_url}
+                type="info"
+                showIcon
+              />
+            ) : (
+              !isPublic && <Empty description="No invitation" />
+            )}
+          </Col>
+        )}
       </Row>
     </div>
   );
 };
 
 export default CreateConnectionScreen;
+
+interface Props {
+  isPublic: boolean | undefined;
+}
