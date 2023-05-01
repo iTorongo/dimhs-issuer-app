@@ -95,7 +95,7 @@ const CreateConnectionScreen = ({ isPublic = false }: Props) => {
               <div className="d-flex justify-content-center">
                 <Card title="Scan Invitation QR Code">
                   <QRCode
-                    size={512}
+                    size={isPublic ? 512 : 256}
                     value={createdInvitation?.invitation_url}
                   />
                 </Card>
