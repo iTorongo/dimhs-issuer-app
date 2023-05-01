@@ -1,60 +1,77 @@
+import { useState } from "react";
 import { SendOutlined } from "@ant-design/icons";
-import {
-  Button,
-  Card,
-  Row,
-  Col,
-  Alert,
-  Select,
-  Form,
-  DatePicker,
-  TimePicker,
-  Input,
-} from "antd";
-import TextArea from "antd/es/input/TextArea";
-import { useEffect, useState } from "react";
-import { useMutation, useQuery } from "react-query";
+import { Button, Card, Row, Col, Alert, Select, Form, Input } from "antd";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   getConnections,
   getCredDefs,
+  getSchemaDetails,
   getSchemas,
   issueCredentialSend,
+  createCredential,
+  sendCredentialOffer,
+  getPublicDIDFromWallet,
 } from "../../../../api/services";
+import {
+  capitalizeFirstLetter,
+  getSchemaDetailsFromId,
+} from "../../../../helpers/utils.helpers";
+import TextArea from "antd/es/input/TextArea";
+import Title from "antd/es/typography/Title";
 
 const IssueCredentialScreen = () => {
   const [sendCredential, setSendCredential] = useState<any>();
-  const [connections, setConnections] = useState<any>();
-  const [credentialDefinitions, setCredentialDefinitions] = useState<any>();
-  const [schemas, setSchemas] = useState<any>();
+  const [selectedSchema, setSelectedSchema] = useState<any>();
 
   const { data: connectionsData } = useQuery({
     queryKey: ["getConnections"],
     queryFn: () => getConnections(),
     enabled: true,
+    staleTime: Infinity,
   });
 
   const { data: credentialDefinitionsData } = useQuery({
     queryKey: ["getCredentialDefinitions"],
     queryFn: () => getCredDefs(),
     enabled: true,
+    staleTime: Infinity,
   });
 
   const { data: credentialSchemas } = useQuery({
     queryKey: ["getSchemas"],
     queryFn: () => getSchemas(),
     enabled: true,
+    staleTime: Infinity,
   });
 
-  useEffect(() => {
-    setConnections(connectionsData?.data?.results);
-    setCredentialDefinitions(
-      credentialDefinitionsData?.data?.credential_definition_ids
-    );
-    setSchemas(credentialSchemas?.data?.schema_ids);
-    return () => {
-      console.log("cleanup");
-    };
-  }, [connectionsData, credentialDefinitionsData, credentialSchemas]);
+  const { data: issuerDID } = useQuery({
+    queryKey: ["getPublicDID"],
+    queryFn: () => getPublicDIDFromWallet(),
+    enabled: true,
+    staleTime: Infinity,
+  });
+
+  // console.log(
+  //   JSON.stringify(
+  //     JSON.parse(
+  //       atob(
+  //         "eyJAdHlwZSI6ICJkaWQ6c292OkJ6Q2JzTlloTXJqSGlxWkRUVUFTSGc7c3BlYy9jb25uZWN0aW9ucy8xLjAvaW52aXRhdGlvbiIsICJAaWQiOiAiMjk5NTE5YmQtNzA3MC00YjY3LWI2MTQtYmFkMDY5Nzg1YmI4IiwgInNlcnZpY2VFbmRwb2ludCI6ICJodHRwOi8vaXAxNzItMTgtMC04MC1jZ3FqMmdhZTY5djAwMDk2a2Y3Zy04MDIwLmRpcmVjdC5sYWJzLnBsYXktd2l0aC1kb2NrZXIuY29tIiwgInJlY2lwaWVudEtleXMiOiBbIkVrQ0JMSEZEMmd5SGFkVGtaZUJIbUVMUnpkUXBXUzZwalo4RGhvd3BQa0w1Il0sICJsYWJlbCI6ICJmYWJlci5hZ2VudCJ9"
+  //       )
+  //     ),
+  //     null,
+  //     4
+  //   )
+  // );
+
+  const handleSchemaChange = (value: string) => {
+    getSchemaDetails(value)
+      ?.then(response => {
+        setSelectedSchema(response?.data?.schema);
+      })
+      .finally(() => {
+        console.log("done");
+      });
+  };
 
   const issueCredentialSendMutation = useMutation({
     mutationFn: (reqBody: any) => {
@@ -66,7 +83,7 @@ const IssueCredentialScreen = () => {
   });
 
   const getActiveConnections = () => {
-    return connections
+    return connectionsData?.data?.results
       ?.filter((connection: any) => connection.state === "active")
       ?.map((conn: any) => {
         return {
@@ -77,46 +94,44 @@ const IssueCredentialScreen = () => {
   };
 
   const onFinish = (values: any) => {
-    console.log("Success:", values);
+    const schemaDetails = getSchemaDetailsFromId(values?.schema_id ?? "");
+    const attributes = Object.entries(values)
+      .map(([name, value]) => {
+        return {
+          name,
+          value,
+        };
+      })
+      ?.filter(
+        obj =>
+          obj.name !== "connection_id" &&
+          obj.name !== "cred_def_id" &&
+          obj.name !== "schema_id" &&
+          obj.name !== "comment"
+      );
+    console.log(values);
     issueCredentialSendMutation.mutate({
-      auto_remove: true,
+      auto_remove: false,
+      auto_issue: false,
       comment: values?.comment,
       connection_id: values?.connection_id,
       cred_def_id: values?.cred_def_id,
       credential_proposal: {
         "@type": "issue-credential/1.0/credential-preview",
-        attributes: [
-          {
-            name: "name",
-            value: values?.name,
-          },
-          {
-            name: "birthdate_dateint",
-            value: values?.birthdate_dateint,
-          },
-          {
-            name: "degree",
-            value: values?.degree,
-          },
-          {
-            name: "timestamp",
-            value: values?.timestamp,
-          },
-          {
-            name: "date",
-            value: values?.date,
-          },
-        ],
+        attributes,
       },
-      issuer_did: "LJaG58voggHsdSgm2rJr3c",
+      issuer_did: issuerDID?.data?.result?.did,
       schema_id: values?.schema_id,
-      schema_issuer_did: "LJaG58voggHsdSgm2rJr3c",
-      trace: true,
+      schema_issuer_did: issuerDID?.data?.result?.did,
+      schema_name: schemaDetails[2],
+      schema_version: schemaDetails[3],
+      trace: false,
     });
   };
 
   return (
     <div className="issue-credential-container">
+      <Title level={4}>Issue and Send Credentials</Title>
       <Row gutter={[16, 16]}>
         <Col span={24}>
           {sendCredential && (
@@ -138,9 +153,9 @@ const IssueCredentialScreen = () => {
               <Form.Item
                 label="Connection Id"
                 name="connection_id"
-                rules={[
-                  { required: true, message: "Please select a connection Id!" },
-                ]}
+                // rules={[
+                //   { required: true, message: "Please select a connection Id!" },
+                // ]}
               >
                 <Select
                   placeholder="Select a connection"
@@ -156,9 +171,12 @@ const IssueCredentialScreen = () => {
               >
                 <Select
                   placeholder="Select a schema"
-                  options={schemas?.map((schema: string) => {
-                    return { value: schema, label: schema };
-                  })}
+                  options={credentialSchemas?.data?.schema_ids?.map(
+                    (schema: string) => {
+                      return { value: schema, label: schema };
+                    }
+                  )}
+                  onSelect={handleSchemaChange}
                 />
               </Form.Item>
               <Form.Item
@@ -173,30 +191,35 @@ const IssueCredentialScreen = () => {
               >
                 <Select
                   placeholder="Select a credential definition"
-                  options={credentialDefinitions?.map((credDef: string) => {
-                    return { value: credDef, label: credDef };
-                  })}
+                  options={credentialDefinitionsData?.data?.credential_definition_ids?.map(
+                    (credDef: string) => {
+                      return { value: credDef, label: credDef };
+                    }
+                  )}
                 />
               </Form.Item>
-              <Form.Item
-                label="Name"
-                name="name"
-                rules={[{ required: true, message: "Please input your name" }]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item label="Degree" name="degree">
-                <Input />
-              </Form.Item>
-              <Form.Item label="Date of Birth" name="birthdate_dateint">
-                <DatePicker />
-              </Form.Item>
-              <Form.Item label="Date" name="date">
-                <DatePicker />
-              </Form.Item>
-              <Form.Item label="Timestamp" name="timestamp">
-                <TimePicker />
-              </Form.Item>
+              {selectedSchema?.attrNames?.map((attr: string) => {
+                const readableAttribute = attr?.replaceAll("_", " ");
+                return (
+                  <Form.Item
+                    key={attr}
+                    label={capitalizeFirstLetter(readableAttribute)}
+                    name={attr}
+                    rules={[
+                      {
+                        required: true,
+                        message: `Please input ${readableAttribute}`,
+                      },
+                    ]}
+                  >
+                    <Input placeholder={`Enter ${readableAttribute}`} />
+                    {/* {attr?.includes("date") ? (
+                      <DatePicker format={DateFormats.DAY_MONTH_YEAR} />
+                    ) : ( */}
+                    {/* )} */}
+                  </Form.Item>
+                );
+              })}
               <Form.Item label="Comment" name="comment">
                 <TextArea rows={4} />
               </Form.Item>
