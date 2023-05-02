@@ -6,7 +6,7 @@ const { Title } = Typography;
 const HomeScreen = () => {
   return (
     <div className="d-flex">
-      <Title level={2}>Welcome Hospital Issuer</Title>
+      <Title level={2}>Welcome to Government Issuer Dashboard</Title>
     </div>
   );
 };

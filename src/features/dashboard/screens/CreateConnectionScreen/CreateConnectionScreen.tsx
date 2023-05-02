@@ -1,4 +1,4 @@
-import { PlusCircleOutlined, ArrowLeftOutlined } from "@ant-design/icons";
+import { LinkOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import { Button, Card, Row, Col, QRCode, Empty, Alert, Typography } from "antd";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
@@ -49,7 +49,7 @@ const CreateConnectionScreen = ({ isPublic = false }: Props) => {
               <Button
                 type="primary"
                 size="large"
-                icon={<PlusCircleOutlined />}
+                icon={<LinkOutlined />}
                 onClick={() => createConnection()}
                 loading={createConnectionMutation?.isLoading}
                 className="mb-3"

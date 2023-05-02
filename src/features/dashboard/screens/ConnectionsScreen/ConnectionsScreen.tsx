@@ -72,7 +72,7 @@ const ConnectionsScreen = () => {
     switch (state) {
       case "active":
       case "completed":
-        return "#87d068";
+        return " ";
       case "invitation":
         return "blue";
       case "response":

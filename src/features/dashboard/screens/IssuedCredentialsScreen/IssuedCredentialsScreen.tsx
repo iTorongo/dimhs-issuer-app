@@ -29,11 +29,13 @@ const IssuedCredentialsScreen = () => {
       | "request_sent"
       | "request_received"
       | "credential_issued"
+      | "credential_acked"
       | "done"
   ) => {
     switch (state) {
       case "credential_issued":
       case "done":
+      case "credential_acked":
         return "#87d068";
       case "offer_sent":
       case "offer_received":
