@@ -1,6 +1,6 @@
-# Getting Started with Create React App
+# BDIMHS Issuer App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This app can be used by the issuer who is responsible for issue verifiable credential to the users. By default this app is configured for the Hospital Issuer.
 
 ## Available Scripts
 
