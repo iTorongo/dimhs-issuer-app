@@ -1,7 +1,8 @@
 import { Card, Image } from "antd";
 import Title from "antd/es/typography/Title";
 import CreateConnectionScreen from "../../../dashboard/screens/CreateConnectionScreen/CreateConnectionScreen";
-import image from "../../../../assets/scan-connect-user.jpg";
+import image from "../../../../assets/scan-connect.png";
+import imageHospital from "../../../../assets/hospital.jpg";
 
 const ConnectScreens = () => {
   return (
@@ -12,7 +13,9 @@ const ConnectScreens = () => {
         </Title>
         <CreateConnectionScreen isPublic />
       </Card>
-      <Image width={850} preview={false} src={image} />
+      <div className="d-flex justify-content-center">
+        <Image width={550} preview={false} src={image} />
+      </div>
     </div>
   );
 };

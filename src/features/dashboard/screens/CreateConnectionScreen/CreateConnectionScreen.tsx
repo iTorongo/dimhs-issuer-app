@@ -1,14 +1,20 @@
-import { LinkOutlined, ArrowLeftOutlined } from "@ant-design/icons";
+import {
+  LinkOutlined,
+  ArrowLeftOutlined,
+  CopyOutlined,
+} from "@ant-design/icons";
 import { Button, Card, Row, Col, QRCode, Empty, Alert, Typography } from "antd";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { createConnectionInvitation } from "../../../../api/services";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 const { Text } = Typography;
 
 const CreateConnectionScreen = ({ isPublic = false }: Props) => {
   const [createdInvitation, setCreatedInvitation] = useState<any>();
+  const [copied, setCopied] = useState<boolean>(false);
 
   const createConnectionMutation = useMutation({
     mutationFn: (reqBody: any) => {
@@ -71,16 +77,27 @@ const CreateConnectionScreen = ({ isPublic = false }: Props) => {
           </div>
 
           {createdInvitation?.invitation_url && (
-            <Alert
-              message="Connection Invitation Created"
-              type="success"
-              showIcon
-            />
+            <div>
+              <Alert
+                message="Connection Invitation Created"
+                type="success"
+                showIcon
+              />
+              <CopyToClipboard
+                text={JSON.stringify(createdInvitation.invitation)}
+                onCopy={() => setCopied(true)}
+              >
+                <Button className="m-2" type="primary" icon={<CopyOutlined />}>
+                  Copy Invitation to Clipboard
+                </Button>
+              </CopyToClipboard>
+              {copied && <span>Copied!</span>}
+            </div>
           )}
         </Col>
 
         <Col span={24}>
-          {!!createdInvitation && !isPublic && (
+          {!!createdInvitation && (
             <Card
               title="Invitation Object"
               loading={createConnectionMutation?.isLoading}
@@ -109,6 +126,16 @@ const CreateConnectionScreen = ({ isPublic = false }: Props) => {
             </>
           )}
         </Col>
+        {/* <Col span={24}>
+          {!!createdInvitation && (
+            <Card
+              title="Invitation Object"
+              loading={createConnectionMutation?.isLoading}
+            >
+              <pre>{JSON.stringify(createdInvitation, null, 2)}</pre>
+            </Card>
+          )}
+        </Col> */}
 
         {!isPublic && (
           <Col>
