@@ -6,7 +6,7 @@ const LoginScreen = () => {
 
   const onFinish = (values: any) => {
     console.log("Success:", values);
-    if (values.username === "arnaf" && values.password === "4321") {
+    if (values.username === "admin" && values.password === "4321") {
       navigate("/");
     }
   };

@@ -27,7 +27,7 @@ const { Title } = Typography;
 const CredentialSchemasScreen = () => {
   const [schemas, setsSchemas] = useState<any[]>([]);
   const [schemasLoading, setSchemasLoading] = useState(false);
-  const { isLoading, data } = useQuery({
+  const { isLoading, data, refetch } = useQuery({
     queryKey: ["getSchemas"],
     queryFn: () => getSchemas(),
     enabled: true,
@@ -60,6 +60,7 @@ const CredentialSchemasScreen = () => {
         type: "success",
         message: "Credential Schema has been created",
       });
+      refetch();
       fetchAllASchema(schemaIds);
     },
     onError: (error: any) => {

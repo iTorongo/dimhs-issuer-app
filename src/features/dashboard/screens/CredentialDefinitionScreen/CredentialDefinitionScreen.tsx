@@ -29,7 +29,7 @@ const CredentialDefinitionScreen = () => {
 
   const [form] = Form.useForm();
 
-  const { data } = useQuery({
+  const { data, refetch } = useQuery({
     queryKey: ["getCredDefs"],
     queryFn: () => getCredDefs(),
     enabled: true,
@@ -71,6 +71,7 @@ const CredentialDefinitionScreen = () => {
         type: "success",
         message: "Credential Definition has been created",
       });
+      refetch();
       fetchAllCredDefinitions(credentialDefinitionsIds);
       form.resetFields();
     },

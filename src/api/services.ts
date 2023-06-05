@@ -81,3 +81,7 @@ export const createCredential = (requestBody: any) => {
 export const sendCredentialOffer = (requestBody: any) => {
   return apiClient.post("/issue-credential/send-offer", requestBody);
 };
+
+export const acceptConnectionRequestForHolder = (requestBody: any) => {
+  return apiClientHolder.post(`/connections/receive-invitation`, requestBody);
+};

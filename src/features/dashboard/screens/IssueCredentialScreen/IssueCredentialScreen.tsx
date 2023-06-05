@@ -34,7 +34,7 @@ const IssueCredentialScreen = () => {
     queryKey: ["getCredentialDefinitions"],
     queryFn: () => getCredDefs(),
     enabled: true,
-    staleTime: Infinity,
+    // staleTime: Infinity,
   });
 
   const { data: credentialSchemas } = useQuery({
@@ -112,7 +112,7 @@ const IssueCredentialScreen = () => {
     console.log(values);
     issueCredentialSendMutation.mutate({
       auto_remove: false,
-      auto_issue: false,
+      auto_issue: true,
       comment: values?.comment,
       connection_id: values?.connection_id,
       cred_def_id: values?.cred_def_id,
